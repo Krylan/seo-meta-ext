@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{
+	overflow-wrap: break-word;
+	padding:0;margin:0;
+	overflow:hidden;
+	font-family:sans-serif;
+}
+header{
+background-color: #a174da;
+padding: 10px 15px;
+color: #FFF;
+}
+header h1{
+margin:5px 0;
+font-size:24px;
+}
+.tabs{
+padding:0;margin:0;
+list-style:none;
+border-bottom: 1px solid #6e479f;
+background-color: #a174da;
+color: #FFF;
+}
+.tabs .tab{
+text-align:center;
+box-sizing:border-box;
+padding:15px;
+cursor:pointer;
+font-weight:bold;
+}
+.tabs .tab.active{
+border-bottom:4px solid #6e479f;
+}
+.report_section{
+font-family:monospace;
+border-bottom:1px solid #DDD;
+font-size: 12px;
+padding:15px;
+}
+
+.label{
+	border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-right: 10px;
+    margin-bottom: 5px;
+    background-color: #a174da;
+    color: #FFF;
+    width: fit-content;
+    margin-left: -20px;
+    margin-top: -5px;
+}
+.report_section ul{
+	padding:0;
+}
+.report_section ul li{
+	padding: 5px 10px;
+    list-style: none;
+	margin:10px;
+	border-left:2px solid #a174da;
+}
+
+#report-meta{ display:block; }
+
+.report{ overflow-y:auto;height:400px; }
+
+#refresh{
+	background-color:transparent;
+	color:#FFF;
+	border:none;
+	position:absolute;right:15px;top:15px;
+}
+#refresh svg{
+	fill:#6e479f;
+}
+#refresh:hover svg{
+	fill:#000;
+}
+
+#error{
+display:none;
+color: #721c24;
+background-color: #f8d7da;
+border-color: #f5c6cb;
+position: relative;
+padding: 10px;
+margin: 15px;
+border: 1px solid transparent;
+border-radius: 5px;
+box-sizing:border-box;
+position: absolute;left: 0;right: 0;
+}
+</style>
+</head>
+<body style="width:400px;">
+<header>
+<h1>Meta Tags Checker</h1>
+<small>Version 0.1</small>
+<button id="refresh" title="Refresh reports"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M13.5 2c-5.621 0-10.211 4.443-10.475 10h-3.025l5 6.625 5-6.625h-2.975c.257-3.351 3.06-6 6.475-6 3.584 0 6.5 2.916 6.5 6.5s-2.916 6.5-6.5 6.5c-1.863 0-3.542-.793-4.728-2.053l-2.427 3.216c1.877 1.754 4.389 2.837 7.155 2.837 5.79 0 10.5-4.71 10.5-10.5s-4.71-10.5-10.5-10.5z"/></svg></button>
+</header>
+
+<ul class="tabs" style="display:grid;grid-template-columns:1fr 1fr;">
+<li id="tab-meta" class="tab active">Meta Tags</li>
+</ul>
+
+<div id="error">There is a problem with obtaining a report. Probably extension can't access this page.</div>
+<div id="report-meta" class="report"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

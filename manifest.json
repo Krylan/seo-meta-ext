@@ -1,0 +1,17 @@
+{
+  "name": "Meta Tag Checker",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Check Meta Tags on any website",
+  "icons": {
+    "16": "icon-16.png",
+    "128": "icon-128.png"
+  },
+  "permissions": [
+    "activeTab"
+  ],
+  "browser_action": {
+    "default_title": "Check Meta Tags",
+	"default_popup": "popup.html"
+  }
+}
