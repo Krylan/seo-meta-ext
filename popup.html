@@ -16,6 +16,16 @@ header{
 header h1{
 	margin:5px 0;
 	font-size:24px;
+	display:inline-block;
+}
+header h1 + .version-label{
+	font-size:10px;
+    margin: 5px 12px;
+    padding: 2px 5px;
+    border-radius: 5px;
+    background-color: #6e479f;
+    vertical-align: top;
+    display: inline-block;
 }
 .tabs{
 	padding:0;margin:0;
@@ -88,6 +98,7 @@ header h1{
 }
 #refresh:hover svg{
 	fill:#000;
+	cursor:pointer;
 }
 
 #error{
@@ -104,6 +115,13 @@ header h1{
 	position: absolute;left: 0;right: 0;
 }
 
+.info-alert{
+	background-color:#e6dbf5;
+	color:#4f208a;
+	border-radius:5px;
+	padding:10px;
+}
+
 .button{
 	padding:10px;
 	margin:10px;
@@ -113,12 +131,25 @@ header h1{
 	text-align:center;
 	cursor:pointer;
 }
+
+.button.disabled{
+	background-color: #888;
+	pointer-events:none;
+	cursor:default;
+}
+
+.button:not(.disabled):hover{
+	background-color: #6e479f;
+}
+
+.no-header{
+	color:#999;
+}
 </style>
 </head>
 <body style="width:400px;">
 <header>
-<h1>Meta Tags Checker</h1>
-<small>Version 0.2</small>
+<h1>Meta Tags Checker</h1><span class="version-label">v0.3</span>
 <button id="refresh" title="Refresh reports"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M13.5 2c-5.621 0-10.211 4.443-10.475 10h-3.025l5 6.625 5-6.625h-2.975c.257-3.351 3.06-6 6.475-6 3.584 0 6.5 2.916 6.5 6.5s-2.916 6.5-6.5 6.5c-1.863 0-3.542-.793-4.728-2.053l-2.427 3.216c1.877 1.754 4.389 2.837 7.155 2.837 5.79 0 10.5-4.71 10.5-10.5s-4.71-10.5-10.5-10.5z"/></svg></button>
 </header>
 
