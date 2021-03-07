@@ -31,6 +31,8 @@ function getMeta() {
 	});
 	report[0] += '</ul></div>';
 	
+	report[0] += '<div id="get-http-response" class="button">Get HTTP Response Headers</div>';
+	
 	// OPEN GRAPH TAGS
 	report[1] += '<div class="report_section"><ul>';
 	document.head.querySelectorAll('meta[property="og:title"]').forEach(function(elem){
@@ -53,6 +55,43 @@ function getMeta() {
 	return report;
 }
 
+function httpHeadersReport(){
+	document.querySelector('#get-http-response').remove();
+	
+	chrome.tabs.executeScript({
+		code: '(function(){return window.location.href;})();'
+	}, (results) => {
+		
+		fetch(results[0]).then(function(response) {
+			let report = [''];
+			report[0] += '<div class="report_section"><ul>';
+			console.log(response.headers.get('X-Robots-Tag'));
+			if(response.headers.get('X-Robots-Tag') != null){
+			  let robots_index = '<div class="label right green">Index</div>';
+			  let robots_follow = '<div class="label right green">Follow</div>';
+			  if(response.headers.get('X-Robots-Tag').includes("noindex")){
+				robots_index = '<div class="label right red">Noindex</div>';
+			  }
+			  if(response.headers.get('X-Robots-Tag').includes("nofollow")){
+				robots_follow = '<div class="label right red">Nofollow</div>';
+			  }
+			  report[0] += '<li><div><div class="label left">HTTP X-Robots-Tag</div>'+robots_follow+robots_index+'<br style="clear:both;"/></div>'+response.headers.get('X-Robots-Tag')+'</li>';
+			}else{
+			  report[0] += '<li><div><div class="label left">HTTP X-Robots-Tag</div><br style="clear:both;"/></div>No header</li>';
+			}
+			if(response.headers.get('link') != null){
+			  report[0] += '<li><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>'+response.headers.get('link')+'</li>';
+			}else{
+			  report[0] += '<li><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>No header</li>';
+			}
+			report[0] += '</ul></div>';
+
+			document.querySelector('#report-meta').innerHTML += report[0];
+		});
+
+	});
+}
+
 function generateReport(){
 	chrome.tabs.executeScript({
 		code: '(' + getMeta + ')();'
@@ -61,10 +100,12 @@ function generateReport(){
 			document.querySelector('#error').style.display = 'block';
 		}else{
 			document.querySelector('#error').style.display = 'none';
-			console.log(document.querySelector('#report-meta'));
-			console.log(results[0][0]);
 			document.querySelector('#report-meta').innerHTML = results[0][0];
 			document.querySelector('#report-og').innerHTML = results[0][1];
+			
+			document.querySelector('#get-http-response').addEventListener('click', () => {
+				httpHeadersReport();
+			});
 		}
 	});
 }
