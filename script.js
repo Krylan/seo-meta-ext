@@ -76,40 +76,48 @@ function getMeta() {
 	return report;
 }
 
+function fetchHeaders(){
+	fetch(window.location.href).then(function(response) {
+		let report = [''];
+		report[0] += '<div class="report_section"><ul>';
+		if(response.headers.get('X-Robots-Tag') != null){
+		  let robots_index = '<div class="label right green">Index</div>';
+		  let robots_follow = '<div class="label right green">Follow</div>';
+		  if(response.headers.get('X-Robots-Tag').includes("noindex")){
+			robots_index = '<div class="label right red">Noindex</div>';
+		  }
+		  if(response.headers.get('X-Robots-Tag').includes("nofollow")){
+			robots_follow = '<div class="label right red">Nofollow</div>';
+		  }
+		  report[0] += '<li><div><div class="label left">HTTP X-Robots-Tag</div>'+robots_follow+robots_index+'<br style="clear:both;"/></div>'+response.headers.get('X-Robots-Tag')+'</li>';
+		}else{
+		  report[0] += '<li class="no-header"><div><div class="label left">HTTP X-Robots-Tag</div><br style="clear:both;"/></div>No header</li>';
+		}
+		if(response.headers.get('link') != null){
+		  report[0] += '<li><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>'+response.headers.get('link')+'</li>';
+		}else{
+		  report[0] += '<li class="no-header"><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>No header</li>';
+		}
+		report[0] += '</ul></div>';
+		
+		return report;
+	}).then(function(result){
+		chrome.runtime.sendMessage({ success: true, report: result });
+	});
+}
+
 function httpHeadersReport(){
 	document.querySelector('#get-http-response').classList.add('disabled');
-	
-	chrome.tabs.executeScript({
-		code: '(function(){return window.location.href;})();'
-	}, (results) => {
-		
-		fetch(results[0]).then(function(response) {
-			let report = [''];
-			report[0] += '<div class="report_section"><ul>';
-			if(response.headers.get('X-Robots-Tag') != null){
-			  let robots_index = '<div class="label right green">Index</div>';
-			  let robots_follow = '<div class="label right green">Follow</div>';
-			  if(response.headers.get('X-Robots-Tag').includes("noindex")){
-				robots_index = '<div class="label right red">Noindex</div>';
-			  }
-			  if(response.headers.get('X-Robots-Tag').includes("nofollow")){
-				robots_follow = '<div class="label right red">Nofollow</div>';
-			  }
-			  report[0] += '<li><div><div class="label left">HTTP X-Robots-Tag</div>'+robots_follow+robots_index+'<br style="clear:both;"/></div>'+response.headers.get('X-Robots-Tag')+'</li>';
-			}else{
-			  report[0] += '<li class="no-header"><div><div class="label left">HTTP X-Robots-Tag</div><br style="clear:both;"/></div>No header</li>';
-			}
-			if(response.headers.get('link') != null){
-			  report[0] += '<li><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>'+response.headers.get('link')+'</li>';
-			}else{
-			  report[0] += '<li class="no-header"><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>No header</li>';
-			}
-			report[0] += '</ul></div>';
-
+	document.querySelector('#get-http-response').innerText = 'Fetching...';
+	chrome.tabs.executeScript(
+    { code: '( '+fetchHeaders+' )()' }, 
+	() => {
+		chrome.runtime.onMessage.addListener(
+		  function(request, sender, sendResponse) {
 			document.querySelector('#get-http-response').remove();
-			document.querySelector('#report-meta').innerHTML += report[0];
-		});
-
+			document.querySelector('#report-meta').innerHTML += request.report[0];
+		  }
+		);
 	});
 }
 
