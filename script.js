@@ -1,6 +1,6 @@
 function getMeta() {
-	let report = ['',''];
-	let category = ['','',''];
+	let report = ['','',''];
+	let category = ['','','',''];
 	
 	// META TAGS | CATEGORY 0
 	document.head.querySelectorAll('title').forEach(function(elem){
@@ -73,6 +73,26 @@ function getMeta() {
 	}
 	report[1] += '</div>';
 	
+	// TWITTER CARD TAGS | CATEGORY 3
+	const twitterCardCheck = ['card', 'site', 'site:id', 'creator', 'creator:id', 'description', 'title', 'image', 'image:alt', 'player', 'player:width', 'player:height', 'player:stream', 'app:name:iphone', 'app:id:iphone', 'app:url:iphone', 'app:name:ipad', 'app:id:ipad', 'app:url:ipad', 'app:name:googleplay', 'app:id:googleplay', 'app:url:googleplay'];
+	twitterCardCheck.forEach(function(property){
+		document.head.querySelectorAll('meta[name="twitter:'+property+'"]').forEach(function(elem){
+			if(property == 'image'){
+				category[3] += '<li><div class="label">twitter:'+property+'</div>'+elem.getAttribute('content')+'<br /><img src="'+elem.getAttribute('content')+'" style="max-width:100%;max-height:150px;" /></li>';
+			}else{
+				category[3] += '<li><div class="label">twitter:'+property+'</div>'+elem.getAttribute('content')+'</li>';
+			}
+		});
+	});
+	
+	report[2] += '<div class="report_section">';
+	if(category[3].length > 0){
+		report[2] += '<ul>'+category[3]+'</ul>';
+	}else{
+		report[2] += '<div class="info-alert">There are no Twitter Card tags to display</div>';
+	}
+	report[2] += '</div>';
+	
 	return report;
 }
 
@@ -94,7 +114,9 @@ function fetchHeaders(){
 		  report[0] += '<li class="no-header"><div><div class="label left">HTTP X-Robots-Tag</div><br style="clear:both;"/></div>No header</li>';
 		}
 		if(response.headers.get('link') != null){
-		  report[0] += '<li><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>'+response.headers.get('link')+'</li>';
+			let textArea = document.createElement('textarea');
+			textArea.innerText = response.headers.get('link');
+		  report[0] += '<li><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>'+textArea.innerHTML+'</li>';
 		}else{
 		  report[0] += '<li class="no-header"><div><div class="label left">HTTP Link</div><br style="clear:both;"/></div>No header</li>';
 		}
@@ -125,12 +147,13 @@ function generateReport(){
 	chrome.tabs.executeScript({
 		code: '(' + getMeta + ')();'
 	}, (results) => {
-		if(results === undefined){
+		if(results === undefined || results[0] === null){
 			document.querySelector('#error').style.display = 'block';
 		}else{
 			document.querySelector('#error').style.display = 'none';
 			document.querySelector('#report-meta').innerHTML = results[0][0];
 			document.querySelector('#report-og').innerHTML = results[0][1];
+			document.querySelector('#report-twitter').innerHTML = results[0][2];
 			
 			document.querySelector('#get-http-response').addEventListener('click', () => {
 				httpHeadersReport();
@@ -139,18 +162,13 @@ function generateReport(){
 	});
 }
 
-document.querySelector('#tab-meta').addEventListener('click', () => {
-	document.querySelector('#report-meta').style.display = 'block';
-	document.querySelector('#report-og').style.display = 'none';
-	document.querySelector('#tab-meta').classList.add('active');
-	document.querySelector('#tab-og').classList.remove('active');
-});
-
-document.querySelector('#tab-og').addEventListener('click', () => {
-	document.querySelector('#report-og').style.display = 'block';
-	document.querySelector('#report-meta').style.display = 'none';
-	document.querySelector('#tab-og').classList.add('active');
-	document.querySelector('#tab-meta').classList.remove('active');
+document.querySelectorAll('.tab').forEach(function(elem){
+	elem.addEventListener('click', () => {
+		document.querySelector('.tab.active').classList.remove('active');
+		elem.classList.add('active');
+		document.querySelector('.report.active').classList.remove('active');
+		document.querySelector('#'+elem.dataset.tab).classList.add('active');
+	});
 });
 
 document.querySelector('#refresh').addEventListener('click', () => {
