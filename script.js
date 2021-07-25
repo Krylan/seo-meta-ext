@@ -97,7 +97,7 @@ function getMeta() {
 }
 
 function fetchHeaders(){
-	fetch(window.location.href).then(function(response) {
+	fetch(window.location.href, { method: 'HEAD' }).then(function(response) {
 		let report = [''];
 		report[0] += '<div class="report_section"><ul>';
 		if(response.headers.get('X-Robots-Tag') != null){
@@ -131,16 +131,7 @@ function fetchHeaders(){
 function httpHeadersReport(){
 	document.querySelector('#get-http-response').classList.add('disabled');
 	document.querySelector('#get-http-response').innerText = 'Fetching...';
-	chrome.tabs.executeScript(
-    { code: '( '+fetchHeaders+' )()' }, 
-	() => {
-		chrome.runtime.onMessage.addListener(
-		  function(request, sender, sendResponse) {
-			document.querySelector('#get-http-response').remove();
-			document.querySelector('#report-meta').innerHTML += request.report[0];
-		  }
-		);
-	});
+	chrome.tabs.executeScript({ code: '( '+fetchHeaders+' )()' });
 }
 
 function generateReport(){
@@ -162,19 +153,26 @@ function generateReport(){
 	});
 }
 
-document.querySelectorAll('.tab').forEach(function(elem){
-	elem.addEventListener('click', () => {
-		document.querySelector('.tab.active').classList.remove('active');
-		elem.classList.add('active');
-		document.querySelector('.report.active').classList.remove('active');
-		document.querySelector('#'+elem.dataset.tab).classList.add('active');
-	});
-});
-
-document.querySelector('#refresh').addEventListener('click', () => {
-	generateReport();
-});
-
 window.onload = function() {
 	generateReport();
+
+	document.querySelector('#refresh').addEventListener('click', () => {
+		generateReport();
+	});
+
+	document.querySelectorAll('.tab').forEach(function(elem){
+		elem.addEventListener('click', () => {
+			document.querySelector('.tab.active').classList.remove('active');
+			elem.classList.add('active');
+			document.querySelector('.report.active').classList.remove('active');
+			document.querySelector('#'+elem.dataset.tab).classList.add('active');
+		});
+	});
+
+	chrome.runtime.onMessage.addListener(
+	  function(request, sender, sendResponse) {
+		document.querySelector('#get-http-response').remove();
+		document.querySelector('#report-meta').innerHTML += request.report[0];
+	  }
+	);
 };
