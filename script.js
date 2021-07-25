@@ -2,6 +2,8 @@ function getMeta() {
 	let report = ['','',''];
 	let category = ['','','',''];
 	
+	const iconRSS = '<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"><path fill="#FFF" d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368c10.58.046 19.152 8.594 19.183 19.188h4.817c-.03-13.231-10.755-23.954-24-24v4.812z"/></svg>';
+
 	// META TAGS | CATEGORY 0
 	document.head.querySelectorAll('title').forEach(function(elem){
 		category[0] += '<li><div><div class="label left">Title</div><div class="label right grey">Length: '+elem.innerText.length+'</div><br style="clear:both;"/></div>'+elem.innerText+'</li>';
@@ -28,7 +30,7 @@ function getMeta() {
 		report[0] += '<div class="info-alert">There are no meta tags to display</div>';
 	}
 	report[0] += '</div>';
-	
+
 	// LINK REL | CATEGORY 1
 	document.head.querySelectorAll('link[rel=canonical]').forEach(function(elem){
 		let canonical_self = '';
@@ -37,7 +39,13 @@ function getMeta() {
 		}
 		category[1] += '<li><div><div class="label left">Canonical</div>'+canonical_self+'<br style="clear:both;"/></div>'+elem.getAttribute('href')+'</li>';
 	});
-	
+
+	document.head.querySelectorAll('link[rel=alternate]').forEach(function(elem){
+		if(elem.getAttribute('type') == 'application/rss+xml' || elem.getAttribute('type') == 'application/atom+xml'){
+			category[1] += '<li><div><div class="label left">RSS/Atom</div><div class="label right orange">'+iconRSS+'</div><br style="clear:both;"/></div>'+elem.getAttribute('href')+'</li>';
+		}
+	});
+
 	report[0] += '<div class="report_section">';
 	if(category[1].length > 0){
 		report[0] += '<ul>'+category[1]+'</ul>';
