@@ -46,6 +46,12 @@ function getMeta() {
 		}
 	});
 
+	document.head.querySelectorAll('link[rel=alternate]').forEach(function(elem){
+		if(elem.getAttribute('hreflang') && elem.getAttribute('hreflang').length > 0){
+			category[1] += '<li><div><div class="label left">Hreflang</div><div class="label right indigo">'+elem.getAttribute('hreflang')+'</div><br style="clear:both;"/></div>'+elem.getAttribute('href')+'</li>';
+		}
+	});
+
 	report[0] += '<div class="report_section">';
 	if(category[1].length > 0){
 		report[0] += '<ul>'+category[1]+'</ul>';
